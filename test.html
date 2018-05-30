@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  #oC{
+    width:200px;
+    height:200px;
+  }
+  </style>
+  <script src="vue.js"></script>
+  <script>
+    let lctx
+    window.onload=function(){
+      let oC=document.getElementById('oC');
+      let ctx=oC.getContext('2d');
+      lctx=ctx
+      ctx.fillStyle='red'
+      ctx.strokeStyle='green'
+      pl(ctx,[{x:10,y:10},{x:90,y:90},{x:50,y:90},{x:50,y:10}])
+
+      //ctx.clearRect(0,0,oC.width,oC.height)
+      //ctx.beginPath()
+      
+    }
+    function pl(cx,ps){
+      cx.moveTo(ps[0].x,ps[0].y)
+      ps.splice(1).forEach(i=>{
+        cx.lineTo(i.x,i.y)
+      })
+      cx.closePath()
+      cx.stroke()
+      cx.fill()
+    }
+  </script>
+</head>
+
+<body>
+  <canvas id="oC">
+  </canvas>
+</body>
+
+</html>

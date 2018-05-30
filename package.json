@@ -1,0 +1,15 @@
+{
+  "name": "vueVue",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "vueVue.js",
+  "dependencies": {
+    "pug": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "consloe.log(999)"
+  },
+  "author": "xsz",
+  "license": "ISC"
+}

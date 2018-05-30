@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品管理</title>
+    <style>
+        ul {
+            list-style-type: none;
+        }
+
+        li {
+            width: 33.3%;
+        }
+
+        .ib {
+            width: 20vw;
+            display: inline-block;
+            height: 5vh;
+        }
+
+        * {
+            border: 0px solid blue;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ul1 li {
+            text-align: center;
+            width: 33.3%;
+            padding: 16.6% 0;
+            line-height: 0;
+            font-size: 6vmin;
+            display: block;
+            float: left;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .detail {
+            background: #eee;
+            margin-top: 5px;
+        }
+
+        .p,
+        .d {
+            display: inline-block;
+        }
+
+        .p {
+            width: 30%;
+        }
+
+        .p-img {
+            padding: 0;
+            border: 0;
+            width: 30vw;
+            height: 30vw;
+        }
+
+        .d {
+            width: 68%;
+            vertical-align: top;
+            text-align: center;
+        }
+
+        .d-name {
+            margin: 1vw;
+            margin-top: 3vw;
+            font-size: 1.4em;
+        }
+        .d-price{
+            font-size: 1.5em;
+            width: 100%;
+        }
+        .d-f{
+            font-size: 1.2em;
+            width:60vw;
+        }
+        .edit-item{
+            margin-right:-40vw;
+        }
+        #price_c{
+            font-size: 1.6em;
+            margin:0 10vw;
+            width:40vw;
+        }
+        .add-i,
+        select {
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 1.4em;
+            height: 2em;
+            border-radius: 4px;
+            border: 1px solid #c8cccf;
+            color: #6a6f77;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            display: block;
+            outline: 0;
+            padding: 0 1em;
+            text-decoration: none;
+            width: 100%;
+        }
+        .add-b{
+            width:50vw;
+            font-size:10vw;
+            margin:5vw 25vw;
+        }
+        select{
+            text-align: center;
+        }
+        .x{
+            float: left;
+        }
+        .x-price{color:red;}
+        .x-name{color:green;}
+        #box1{display: none;}
+        #box2{display: none;}
+        body{background:#eee;}
+      .d-f{width:0;height:0;opacity:0.5;}
+      .b2-d{
+          margin-top:2vw;
+          display:grid;
+          grid-template-columns:1.5fr 0 1fr 2.5fr;
+          grid-template-rows:100px;
+          justify-items:center;
+          align-items:center;grid-row-gap:10px;}
+      .b2-d .bt{height:10vw;width:20vw;font-size:5vw;}
+      .b2-d>*{display:inline;vertical-align:middle;}
+      #subm{background:rgb(51, 255, 170);color:#cee;}
+    </style>
+    </style>
+    <script src="jquery-3.2.1.js"></script>
+</head>
+
+<body>
+    <ul class="ul1">
+        <li style="background:#faa;color:#0ff;" onclick="getBox('mysql?class=1')">烟</li>
+        <li style="background:#afa;color:#f0f;" onclick="getBox('mysql?class=2')">茶</li>
+        <li style="background:#aaf;color:#ff0;" onclick="getBox('mysql?class=3')">酒</li>
+        <li style="background:#aff;color:#f00;" onclick="getBox('mysql?class=4')">水</li>
+        <li style="background:#faf;color:#0f0;" onclick="getBox('mysql?class=5')">拜</li>
+        <li style="background:#ffa;color:#00f;" onclick="getBox('mysql?class=6')">杂</li>
+    </ul>
+    <div class='clear'></div>
+    <div id="outerBox">
+        <div id="box"></div>
+        <div id="box1"></div>
+        <div id="box2"></div>
+    </div>
+    <div id="add" class="add" style="display:none;">
+        <form action="add" id="form1" method="post">
+            <input class="add-i" type="text" name="name" id="name" placeholder="输入商品名称">
+            <input class="add-i" type="number" step="0.01" name="price" id="price" placeholder="输入价格">
+            <input class="add-i" type="hidden" name="img" id="img">
+            <select name="cate" id="cate">
+                <option value="1" id="selected_1" disabled selected>请选择类别</option>
+                <option value="1">烟</option>
+                <option value="2">茶</option>
+                <option value="3">酒</option>
+                <option value="4">水</option>
+                <option value="5">拜</option>
+                <option value="6">杂</option>
+            </select>
+            <input class="add-b" type="button" value="添加" onclick="add()">
+        </form>
+    </div>
+    <div id="fixed"></div>
+    <div id="auth" style="width:100vw;height:100vh;position:fixed;display:none;background:rgba(0,0,0,.5);top:0;left:0">
+        <input type="password" name="pass" id="pass" placeholder="请输入验证码" style="position:fixed;bottom:5vw;left:10vw;width:60vw;height:10vw;font-size:8vw">
+        <input type="button" value="验证" id="verify" style="position:fixed;bottom:5vw;right:10vw;width:20vw;height:10vw;font-size:5vw;">
+    </div>
+    <script>
+    var auth=0;
+    var _pass=6666;
+    $('#verify').click(function(e){
+        console.log('click');
+        verify($('#pass')[0].value);
+    });
+    $('#pass').keyup(function(e){
+        if(e.which==13){
+            verify($('#pass')[0].value);
+        }
+    });
+    $('#auth').click(function(e){
+        console.log(this);
+        if(e.target==e.currentTarget){
+            $('#auth').css('display','none');
+        }
+    });
+    function verify(n){
+        console.log(n==_pass);
+        $('#auth').css('display','none');
+        if(n==_pass){
+            $('.edit-item').show();
+            auth=1;
+            detailOpt.edit='inline-block';            
+        }else{
+            alert('错');
+        }
+        $('#pass').val('');
+    }
+    </script>
+    <script>
+        function add() {
+            $.ajax({
+                url: 'add',
+                type: 'get',
+                dataType: 'json',
+                data: $('#form1').serialize(),
+                success: function (res) {
+                    //$("#add").append(res);
+                    alert(res.resultCode);
+                },
+                error: function (err) {
+                    $("#add").append(err);
+                }
+            })
+            $('.add-i').val('');
+            $("#cate").va(1);   
+        }
+        $('body').on('click', '.edit-item', function (e) {
+            var _target = $(e.target);
+            _target.attr('type', 'hidden');
+            _target.siblings('.d-price').hide();
+            _target.siblings('#price_c').attr('type', 'number');
+            _target.siblings('.edit-confirm,.edit-cancle').attr('type', 'button');
+        });
+        $('body').on('click', '.edit-cancle', function (e) {
+            var _target = $(e.target);
+            _target.attr('type', 'hidden');
+            _target.siblings('.d-price').show();
+            _target.siblings('.edit-confirm,#price_c').attr('type', 'hidden');
+            _target.siblings('.edit-item').attr('type', 'button');
+        });
+        $('body').on('click', '.edit-confirm', function (e) {
+            var _target = $(e.target);
+            _target.attr('type', 'hidden');
+            _target.siblings('.d-price').show();
+            _target.siblings('.edit-cancle,#price_c').attr('type', 'hidden');
+            _target.siblings('.edit-item').attr('type', 'button');
+            edit({'el':_target.siblings('.d-price'),'id':_target.attr('myid'),
+            'price':_target.siblings('#price_c')[0].value});
+        });
+        function edit(data){
+            $.ajax({
+                type:'get',
+                //dataType:'json',
+                url:`edit?id=${data.id}&price=${data.price}`,
+                success:function(res){
+                    data.el.html('￥'+data.price);
+                },
+                error:function(err){
+                    console.log(err);
+                }
+
+            })
+        }
+    </script>
+    <script>
+        var detailOpt={edit:'none',confirm:'hidden',cancle:'hidden',price:'hidden'};        
+        getBox('mysql');
+        function getBox(url) {
+
+            $.ajax({
+                url,
+                dataType: 'json',
+                success(res) {
+                    //console.log(res);
+                    //var json = JSON.parse(res);
+                    var html = res.reduce((x, y) => {
+                        return x + tpl(y);
+                    }, '');
+                    $('#box').html(html);
+                    var html_1=res.reduce((x, y) => {
+                        return x + tpl_1(y);
+                    }, '');
+                    html_1+='<div class="clear"></div>';
+                    $('#box1').html(html_1);
+                    var sumb=`<input id="subm" type="button" value="Upload" name="submit" style="width:40vw;height:20vw;font-size:10vw;margin:auto;display:block;">`
+                    var html_2=res.reduce(function(x,y){
+                        return x+tpl_2(y)
+                    },'');
+                    $('#box2').html(html_2+sumb);
+                }
+            });
+            const tpl = (y) => {
+                return `<div class="detail">
+                <div class="p">
+                <img class="p-img" src="img/${y.img || '8081.png'}">
+                </div>  
+                <div class="d">
+                <h3 class="d-name">${y.name}</h3>
+                <p class="d-price">${'￥' + y.price}</p>
+                <input class='d-i' id="price_c" type="${detailOpt.price}" step="0.01" name="price" value=${ y.price}>
+                <input class='d-i edit-item' type="button" value="修改" style="display:${detailOpt.edit};">
+                <input class='d-i edit-confirm' type="${detailOpt.confirm}" myid="${y.id}" value="确定">
+                <input class='d-i edit-cancle' type="${detailOpt.cancle}" value="取消">
+                </div>
+                </div>`;
+            };
+            const tpl_1=y=>{
+                return `<div class="x"><span class="x-name">${y.name}</span><span class="x-price">${y.price}元</span></div>`;
+            };
+            tpl_2=function(y){
+            return `<div class="b2-d">
+                  <span>${y.name}</span>
+                  <input class="d-f" type="file" name="id${y.id}" id="id${y.id}">
+                  <input class="bt" type="button" value="文件" onclick="$('#id${y.id}')[0].click()">
+                  <img id="i${y.id}" class="img1" src="img/${y.img}" onload="this.width*=0.25;this.onload=null" onerror="this.src='img/err.jpg'">
+              </div>`
+        } 
+        }
+    </script>
+    <script>
+        $('#fixed').css({
+            width: '20vw',
+            height: '20vw',
+            top: '20vw',
+            left: '20vw',
+            position: 'fixed',
+            background: 'rgba(210,210,211,.9)',
+            borderRadius: '5vw'
+        })
+        var xs, ys;
+        var _top, _left;
+        var f = $('#fixed');
+        var pop = 0;
+        var touchStartTimeStamp=0;
+        let [a1, a2] = ['#outerBox', '#add'];
+        //for pc drag
+        f.bind('mousedown', function (e1) {
+            xs = e1.offsetX;
+            ys = e1.offsetY;
+            //console.log(e1);
+            f.bind('mousemove', function (e) {
+                //console.log(e.clientY-e.offsetY,e.clientX-e.offsetX)
+                f.css('top', e.clientY - ys).css('left', e.clientX - xs)
+            });
+        }).bind('mouseup', function (e) {
+            f.unbind('mousemove')
+            //console.log('up')
+        });
+        //for mobile drag
+        f.bind('touchstart', function (e1) {
+            pop = 1;
+            touchStartTimeStamp=e1.timeStamp;
+            //console.log(e1.timeStamp)
+            xs = e1.targetTouches[0].clientX;
+            ys = e1.targetTouches[0].clientY;
+            //console.log(e1.targetTouches[0]);
+            f.bind('touchmove', function (e) {
+                pop = 0;
+                //console.log(e.targetTouches[0], e.targetTouches[0].clientY, e.targetTouches[0].offsetY, e.targetTouches[0].clientX, e.targetTouches[0].offsetX)
+                f.css('top', e.targetTouches[0].clientY - ys + parseInt(f.css('top'))).css('left', e.targetTouches[0].clientX - xs + parseInt(f.css('left')))
+                xs = e.targetTouches[0].clientX;
+                ys = e.targetTouches[0].clientY;
+                return false;
+            });
+            return false;
+        }).bind('touchend', function (e) {
+            f.unbind('touchmove')
+            //console.log('up')
+            if (pop) {
+                if(e.timeStamp-touchStartTimeStamp>300){
+                    switch_2(swi);
+                    return false;
+                }
+                if(auth){
+                switch_1();
+            }else{
+                $('#auth').css('display','block');
+                $('#pass').focus();
+            }
+            }
+            return false;
+        });
+        function switch_1(){
+            $(a1).css('display', 'none');
+            $(a2).css('display', 'block');
+            [a1, a2] = [a2, a1];
+        }
+        function switch_2(x){
+            $(x.a).css('display', 'none');
+            $(x.b).css('display', 'block');
+            $(x.c).css('display', 'none');
+            [x.a,x.b,x.c] = [x.b,x.c,x.a];
+        }
+        var swi={a:'#box',b:'#box1',c:'#box2'};
+    </script>
+    <script>
+        var fr=new FileReader()
+        var fd=new FormData()            
+        $('body').on('change','#box2 .d-f',function(e){
+            var _this=this
+            fr.readAsDataURL(_this.files[0])
+            fr.onload=function(e){
+                $(_this).siblings('img')[0].src=fr.result
+            }
+            fd.append(_this.id,_this.files[0])
+        })
+        $('body').on('click','#subm',function(e){
+                $.ajax({
+                    url:'file',
+                    data:fd,
+                    method:'post',
+                    contentType:false,
+                    processData:false,
+                    success:function(res){
+                        location.reload()
+                    }
+                })
+            })
+               
+      </script>
+      <script>
+        var t1;
+        var fr=new FileReader()
+        var fd=new FormData()            
+        $('body').on('change','#box2 .d-f',function(e){
+        var _this=this
+        console.log(_this.files[0])
+        setTimeout(function(){fr.readAsDataURL(_this.files[0])},500)
+        var can=document.createElement('canvas')
+        var ctx=can.getContext('2d')
+        var img=new Image()
+        fr.onload=function(){
+        img.src=fr.result
+        img.onload=function(){
+            console.log(img.width,img.height)
+            var w=img.width,h=img.height
+            can.width=can.height=400
+            var sx,sy,sw,sh,dd=Math.abs((w-h)/2)
+            w>h?(sx=dd,sy=0,sw=sh=h):(sx=0,sy=dd,sw=sh=w)
+            h=w=400
+            ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h)
+            var data=can.toDataURL('image/jpeg',0.85)
+            $(_this).siblings('.img1').attr('src',data);//img地址从canvas获得（can.toDataURL()）
+            data=data.split(',')[1]
+            data=atob(data)
+            var buf=new Uint8Array(data.length)
+            for(i=0,l=buf.length;i<l;i++){
+            buf[i]=data.charCodeAt(i)
+            }
+            var _blob=new Blob([buf],{type:'image/jpeg'})//
+            fd.append(_this.id,_blob)
+        }
+        }
+        })
+        /* $('body').on('load','#box2 .img1',function(){
+            console.log('LOAD')
+            this.widht*=0.25
+            this.height*=0.25
+        }) */
+        
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+doctype html
+html
+    head
+        meta(http-equiv="Content-Type", content="text/html;charset=UTF-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no")
+        meta(http-equiv="X-UA-Compatible" content="ie=edge")
+        style.
+            body{background:#ddd;}
+            .d-f{width:0;height:0;opacity:0.5;}
+            .b2-d{
+                margin-top:2vw;
+                display:grid;
+                grid-template-columns:1.5fr 0 1fr 2.5fr;
+                grid-template-rows:100px;
+                justify-items:center;
+                align-items:center;grid-row-gap:10px;}
+            .b2-d bt{height:10vw;}
+            .b2-d>*{display:inline;vertical-align:middle;}
+        script(src="jquery-3.2.1.js")
+    body
+        div#box2
+        script.
+            var fr=new FileReader()
+            var fd=new FormData()            
+            $('body').on('change','#box2 .d-f',function(e){
+            var _this=this
+            fr.readAsDataURL(_this.files[0])
+            var can=document.createElement('canvas')
+            var ctx=can.getContext('2d')
+            var img=new Image()
+            fr.onload=function(){
+            img.src=fr.result
+            img.onload=function(){
+                console.log(e,img.width,img.height)
+                var w=img.width,h=img.height
+                can.width=can.height=400
+                var sx,sy,sw,sh,dd=Math.abs((w-h)/2)
+                w>h?(sx=dd,sy=0,sw=sh=h):(sx=0,sy=dd,sw=sh=w)
+                h=w=400
+                ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h)
+                var data=can.toDataURL('image/jpeg',0.85)
+                data=data.split(',')[1]
+                data=atob(data)
+                var buf=new Uint8Array(data.length)
+                for(i=0,l=buf.length;i<l;i++){
+                buf[i]=data.charCodeAt(i)
+                }
+                var _blob=new Blob([buf],{type:'image/jpeg'})//
+                fd.append(_this.id,_blob)
+            }
+            }
+            })
+            $('body').on('click','subm',function(e){
+            $.ajax({
+                url:'file',
+                data:fd,
+                method:'post',
+                contentType:false,
+                processData:false,
+                success:function(res){
+                    location.reload()
+                }
+            })
+            })
+            tpl1=function(y){
+            return `<div class="b2-d">
+                        <span>${y.name}</span>
+                        <input class="d-f" type="file" name="id${y.id}" id="id${y.id}">
+                        <input class="bt" type="button" value="文件" onclick="$('#id${y.id}')[0].click()">
+                        <img id="i${y.id}" class="img1" src="img/${y.img}" onload="this.width*=0.25" onerror="this.src='img/err.jpg'">
+                    </div>`
+            }
+            var subm=`<input id="subm" type="button" value="Upload" name="submit" style="width:40vw;height:20vw;font-size:10vw;margin:auto;display:block;">`
+            $.ajax({
+            url:'mysql',
+            dataType:'JSON',
+            success:function(res){
+            var html_2=res.reduce(function(x,y){
+                return x+tpl1(y)
+            },'')
+            $('#box2').html(html_2+subm)
+            }
+            })      
