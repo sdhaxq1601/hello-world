@@ -147,7 +147,7 @@ http.createServer(function (request, response) {
             break;
         case 'getVideoList':
             console.log('getVideoList',queryJson.query['callback'])
-            var fl=fs.readdirSync('E:/BaiduYunDownload/第4季和字幕/第4季内嵌字幕版/'+queryJson.query['path']);
+            var fl=fs.readdirSync('E:/BaiduYunDownload/第4季和字幕/第4季内嵌字幕版/'+queryJson.query['path']||'');
             fl=fl.filter(function(i){return /\.mp4$/g.test(i)});
             fl=fl.map(i=>queryJson.query['path']+'/'+i)
             console.log(fl)
