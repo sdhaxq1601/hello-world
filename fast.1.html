@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            border:0;
+        }
+        body{
+            margin-right: -17px;
+            overflow-x: hidden;
+        }
+        body::-webkit-scrollbar{
+            display:none;
+        }
+        .val{
+            height: 20vw;
+            width:100%;
+            margin:2vw;
+            margin-top:20vw;
+            color:#eee;
+            font-size:15vw;
+            text-align: right;
+        }
+        .key{
+            /* width:20vw;
+            height:20vw; */
+            flex:0 0 20vw;
+            cursor:pointer;
+            margin:2vw;
+            background: #444;
+            text-align: center;
+            vertical-align: middle;
+            line-height:20vw;
+            border-radius: 10vw;
+            font-size: 10vw;
+            color:#eee;
+            letter-spacing:0;
+        }
+        .zero{
+            /* width:44vw; */
+            flex:0 0 44vw;
+        }
+        .whi{
+            background: #eee;
+            color:#000;
+        }
+        .org{
+            background: orange;
+        }
+        .cal{
+            display:flex;
+            flex-wrap: wrap;
+            padding:2vw;
+            font-size: 0;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="cal">
+        <div class="val">0</div>
+        <div class="key clr whi">AC</div>
+        <div class="key opp whi">+/-</div>
+        <div class="key per whi">%</div>
+        <div class="key div org">÷</div>
+        <div class="key num">7</div>
+        <div class="key num">8</div>
+        <div class="key num">9</div>
+        <div class="key mul org">×</div>
+        <div class="key num">4</div>
+        <div class="key num">5</div>
+        <div class="key num">6</div>
+        <div class="key sub org">-</div>
+        <div class="key num">1</div>
+        <div class="key num">2</div>
+        <div class="key num">3</div>
+        <div class="key plu org">+</div>
+        <div class="key num zero">0</div>
+        <div class="key dot">.</div>
+        <div class="key equ org">=</div>
+    </div>
+    <script>
+        var val=''
+        var dot=false
+        var tem=''
+        var opr=''
+        var nxo=false
+        var o={'div':'/','mul':'*','plu':'+','sub':'-'}
+        var dis=document.getElementsByClassName('val')[0]
+        document.addEventListener('click',function(e){
+            var key=e.target.classList.toString().split(' ')[1]||''
+            opr=o[key]||opr
+            key=o[key]?'opr':key
+            var v=e.target.innerText
+            console.log(key,val)
+            switch (key){
+                case 'num':
+                    nxo?val=v:(''+val)!='0'?val+=v:val=v
+                    nxo=false
+                    break                
+                case 'dot':
+                    dot?'':(val+=v,dot=!dot)
+                    break                
+                case 'clr':
+                    dot=false
+                    val=''
+                    opr=''
+                    break                
+                case 'opp':
+                    dot=false
+                    val=val?-val:''
+                    break                
+                case 'opr':console.log('+-*/')
+                    dot=false
+                    nxo=true
+                    tem=val
+                    break                
+                case 'per':
+                    break               
+                case 'equ':
+                    val=val&&opr&&eval(tem+opr+val)
+                    nxo=true
+                    opr=''
+                    break       
+            }
+            dis.innerText=val?val.length<11?val:(''+val).substr(0,11):0
+        })
+    </script>
+</body>
+</html>
